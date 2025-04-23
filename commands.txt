@@ -1,0 +1,5 @@
+
+
+
+bash evaluate_all_in_one.sh --model qwen25_7b --num_processes 8 --benchmark vsibench
+
