@@ -32,8 +32,8 @@ sys.path.append('Qwen2-VL/qwen-vl-utils/src')
 from qwen_vl_utils import process_vision_info
 
 
-@register_model("qwen25vl")
-class Qwen25VL(lmms):
+@register_model("qwen25vl_tuned")
+class Qwen25VL_tuned(lmms):
     def __init__(
         self,
         pretrained: str = "Qwen/Qwen2.5-VL-7B-Instruct",
@@ -48,13 +48,21 @@ class Qwen25VL(lmms):
         super().__init__()
 
         self.path = pretrained
-        self._model = LLM(
-            self.path,
-            download_dir=download_dir,
-            tensor_parallel_size=torch.cuda.device_count(),
-            max_model_len=65536,
-            gpu_memory_utilization=0.8
-        )
+        if download_dir is not None:
+            self._model = LLM(
+                self.path,
+                download_dir=download_dir,
+                tensor_parallel_size=torch.cuda.device_count(),
+                max_model_len=4096,
+                gpu_memory_utilization=0.8
+            )
+        else:
+            self._model = LLM(
+                self.path,
+                tensor_parallel_size=torch.cuda.device_count(),
+                max_model_len=4096,
+                gpu_memory_utilization=0.8
+            )
         self._processor = AutoProcessor.from_pretrained(self.path)
         self._tokenizer = AutoTokenizer.from_pretrained(self.path, trust_remote_code=True)
         print("Done loading processor and tokenizer")

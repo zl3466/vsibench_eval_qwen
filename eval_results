@@ -1,0 +1,3 @@
+ Evaluation results: {'obj_appearance_order_accuracy': 0.25728155339805825, 'object_abs_distance_MRA:.5:.95:.05': 0.1079136690647482, 'object_counting_MRA:.5:.95:.05': 0.24088495575221244, 'object_rel_distance_accuracy': 0.3873239436619718, 'object_size_estimation_MRA:.5:.95:.05': 0.12056663168940188, 'room_size_estimation_MRA:.5:.95:.05': 0.27465277777777775, 'route_planning_accuracy': 0.28350515463917525, 'object_rel_direction_accuracy': 0.446307712934021, 'overall': 0.26480454986467084}
+
+

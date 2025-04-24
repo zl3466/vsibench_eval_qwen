@@ -11,6 +11,7 @@ fi
 
 export OPENAI_API_KEY="" # API KEY FOR OPENAI CHATGPT
 export GOOGLE_API_KEY="" # API KEY FOR GOGOLE GEMINI
+export VLLM_WORKER_MULTIPROC_METHOD=spawn
 
 benchmark=vsibench
 output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
@@ -129,6 +130,21 @@ for model in "${models[@]}"; do
     "internvl2_40b_8f")
         model_family="internvl2"
         model_args="pretrained=OpenGVLab/InternVL2-40B,modality=video,max_frames_num=8,device_map=auto"
+        num_processes=1
+        ;;
+    "qwen25_7b")
+        model_family="qwen25vl"
+        model_args="pretrained=/home/zl3466/Documents/Qwen_models/checkpoint-300,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=32,device_map=auto,modality=video"
+        num_processes=1
+        ;;
+    "qwen25_3b")
+        model_family="qwen25vl"
+        model_args="pretrained=Qwen/Qwen2.5-VL-3B-Instruct,download_dir=/home/zl3466/Documents/Qwen_models,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=32,device_map=auto,modality=video"
+        num_processes=1
+        ;;
+    "qwen25_3b_tuned")
+        model_family="qwen25vl_tuned"
+        model_args="pretrained=/home/zl3466/Documents/Qwen_models/3B/checkpoint-700,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=32,device_map=auto,modality=video"
         num_processes=1
         ;;
     *)
