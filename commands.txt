@@ -1,5 +1,8 @@
+cd /scratch/zl3466/github/vsibench_eval_qwen
+conda activate /scratch/zl3466/env/vsibench
 
 
 
-bash eval_qwen.sh --model qwen25_3b --num_processes 8 --benchmark vsibench
+bash evaluate_all_in_one.sh --model qwen25_7b --num_processes 8 --benchmark vsibench
 
+sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench

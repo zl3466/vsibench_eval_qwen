@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import List, Tuple
 
 import numpy as np
@@ -31,7 +32,12 @@ sys.path.append('Qwen2-VL/')
 sys.path.append('Qwen2-VL/qwen-vl-utils/src')
 from qwen_vl_utils import process_vision_info
 
-
+def extract_answer(text):
+    pattern = r'<answer>\s*(.*?)\s*</answer>'
+    match = re.search(pattern, text, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    return ""
 @register_model("qwen25vl_tuned")
 class Qwen25VL_tuned(lmms):
     def __init__(
@@ -66,6 +72,7 @@ class Qwen25VL_tuned(lmms):
         self._processor = AutoProcessor.from_pretrained(self.path)
         self._tokenizer = AutoTokenizer.from_pretrained(self.path, trust_remote_code=True)
         print("Done loading processor and tokenizer")
+        # self.sampling_params = SamplingParams(temperature=0.8, max_tokens=1024, top_p=0.95)
         self.sampling_params = SamplingParams(temperature=0, max_tokens=1024)
 
         batch_size = int(batch_size)
@@ -120,9 +127,12 @@ class Qwen25VL_tuned(lmms):
     def generate_until(self, requests) -> List[str]:
         res = []
         pbar = tqdm(total=len(requests), disable=(self.rank != 0), desc="Model Responding")
-
+        counter = 0
         for contexts, gen_kwargs, doc_to_visual, doc_id, task, split in [reg.args for reg in requests]:
-
+            if counter % 3 != 0:
+                pbar.update(1)
+                counter += 1
+                continue
             visuals = [doc_to_visual(self.task_dict[task][split][doc_id])]
             visuals = self.flatten(visuals)
             if self.modality == "image":
@@ -162,8 +172,14 @@ class Qwen25VL_tuned(lmms):
                 output_text = generated_ids[0].outputs[0].text
             else:
                 raise NotImplementedError
+            # print(text)
+            # print(output_text)
+            output_text = extract_answer(output_text)
+            # print(f"extracted answer: {output_text}")
             res.append(output_text)
             pbar.update(1)
+
+            counter += 1
         pbar.close()
         return res
 

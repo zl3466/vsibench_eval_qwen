@@ -59,7 +59,8 @@ def vsibench_doc_to_text(doc, lmms_eval_specific_kwargs=None):
     question = doc["question"]
         
     pre_prompt = lmms_eval_specific_kwargs.get("pre_prompt", "") or "These are frames of a video."
-    
+    # import abc
+    # abc.printyes()
     if doc['question_type'] in NA_QUESTION_TYPES:
         post_prompt = lmms_eval_specific_kwargs.get("na_post_prompt", "") or "Please answer the question using a single word or phrase."
         return pre_prompt + "\n" + question + "\n" + post_prompt
