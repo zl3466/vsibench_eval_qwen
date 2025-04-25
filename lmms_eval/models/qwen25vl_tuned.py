@@ -59,14 +59,14 @@ class Qwen25VL_tuned(lmms):
                 self.path,
                 download_dir=download_dir,
                 tensor_parallel_size=torch.cuda.device_count(),
-                max_model_len=4096,
+                max_model_len=20480,
                 gpu_memory_utilization=0.8
             )
         else:
             self._model = LLM(
                 self.path,
                 tensor_parallel_size=torch.cuda.device_count(),
-                max_model_len=4096,
+                max_model_len=20480,
                 gpu_memory_utilization=0.8
             )
         self._processor = AutoProcessor.from_pretrained(self.path)
@@ -129,10 +129,10 @@ class Qwen25VL_tuned(lmms):
         pbar = tqdm(total=len(requests), disable=(self.rank != 0), desc="Model Responding")
         counter = 0
         for contexts, gen_kwargs, doc_to_visual, doc_id, task, split in [reg.args for reg in requests]:
-            if counter % 3 != 0:
-                pbar.update(1)
-                counter += 1
-                continue
+            # if counter % 2000 != 0:
+            #     pbar.update(1)
+            #     counter += 1
+            #     continue
             visuals = [doc_to_visual(self.task_dict[task][split][doc_id])]
             visuals = self.flatten(visuals)
             if self.modality == "image":
@@ -173,9 +173,11 @@ class Qwen25VL_tuned(lmms):
             else:
                 raise NotImplementedError
             # print(text)
-            # print(output_text)
+            print(f"output text:")
+            print(output_text)
             output_text = extract_answer(output_text)
-            # print(f"extracted answer: {output_text}")
+            print(f"extracted answer:")
+            print(output_text)
             res.append(output_text)
             pbar.update(1)
 

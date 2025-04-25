@@ -1,4 +1,5 @@
 import logging
+import re
 from typing import List, Tuple
 
 import numpy as np
@@ -31,7 +32,12 @@ sys.path.append('Qwen2-VL/')
 sys.path.append('Qwen2-VL/qwen-vl-utils/src')
 from qwen_vl_utils import process_vision_info
 
-
+def extract_answer(text):
+    pattern = r'<answer>\s*(.*?)\s*</answer>'
+    match = re.search(pattern, text, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    return ""
 @register_model("qwen25vl")
 class Qwen25VL(lmms):
     def __init__(
@@ -52,8 +58,8 @@ class Qwen25VL(lmms):
             self.path,
             download_dir=download_dir,
             tensor_parallel_size=torch.cuda.device_count(),
-            max_model_len=65536,
-            gpu_memory_utilization=0.8
+            max_model_len=30720,
+            gpu_memory_utilization=0.7
         )
         self._processor = AutoProcessor.from_pretrained(self.path)
         self._tokenizer = AutoTokenizer.from_pretrained(self.path, trust_remote_code=True)
@@ -154,6 +160,11 @@ class Qwen25VL(lmms):
                 output_text = generated_ids[0].outputs[0].text
             else:
                 raise NotImplementedError
+            print(f"output text:")
+            print(output_text)
+            output_text = extract_answer(output_text)
+            print(f"extracted answer:")
+            print(output_text)
             res.append(output_text)
             pbar.update(1)
         pbar.close()

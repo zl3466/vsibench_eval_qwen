@@ -134,17 +134,17 @@ for model in "${models[@]}"; do
         ;;
     "qwen25_7b")
         model_family="qwen25vl"
-        model_args="pretrained=/home/zl3466/Documents/Qwen_models/checkpoint-300,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=32,device_map=auto,modality=video"
+        model_args="pretrained=/home/zl3466/Documents/Qwen_models/checkpoint-300,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=128,device_map=auto,modality=video"
         num_processes=1
         ;;
     "qwen25_3b")
         model_family="qwen25vl"
-        model_args="pretrained=Qwen/Qwen2.5-VL-3B-Instruct,download_dir=/home/zl3466/Documents/Qwen_models,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=32,device_map=auto,modality=video"
+        model_args="pretrained=Qwen/Qwen2.5-VL-3B-Instruct,download_dir=/home/zl3466/Documents/Qwen_models,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     "qwen25_3b_tuned")
         model_family="qwen25vl_tuned"
-        model_args="pretrained=/home/zl3466/Documents/Qwen_models/3B/checkpoint-700,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=32,device_map=auto,modality=video"
+        model_args="pretrained=/home/zl3466/Documents/Qwen_models/3B/checkpoint-700,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     *)
