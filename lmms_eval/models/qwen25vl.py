@@ -160,11 +160,13 @@ class Qwen25VL(lmms):
                 output_text = generated_ids[0].outputs[0].text
             else:
                 raise NotImplementedError
+            print(text)
             print(f"output text:")
             print(output_text)
-            output_text = extract_answer(output_text)
-            print(f"extracted answer:")
-            print(output_text)
+            if int(os.getenv("VSI_THOUGHT_PROCESS")) == 1:
+                output_text = extract_answer(output_text)
+                print(f"extracted answer:")
+                print(output_text)
             res.append(output_text)
             pbar.update(1)
         pbar.close()

@@ -127,12 +127,7 @@ class Qwen25VL_tuned(lmms):
     def generate_until(self, requests) -> List[str]:
         res = []
         pbar = tqdm(total=len(requests), disable=(self.rank != 0), desc="Model Responding")
-        counter = 0
         for contexts, gen_kwargs, doc_to_visual, doc_id, task, split in [reg.args for reg in requests]:
-            # if counter % 2000 != 0:
-            #     pbar.update(1)
-            #     counter += 1
-            #     continue
             visuals = [doc_to_visual(self.task_dict[task][split][doc_id])]
             visuals = self.flatten(visuals)
             if self.modality == "image":
@@ -172,16 +167,16 @@ class Qwen25VL_tuned(lmms):
                 output_text = generated_ids[0].outputs[0].text
             else:
                 raise NotImplementedError
-            # print(text)
+            print(text)
             print(f"output text:")
             print(output_text)
-            output_text = extract_answer(output_text)
-            print(f"extracted answer:")
-            print(output_text)
+            if int(os.getenv("VSI_THOUGHT_PROCESS")) == 1:
+                output_text = extract_answer(output_text)
+                print(f"extracted answer:")
+                print(output_text)
             res.append(output_text)
             pbar.update(1)
 
-            counter += 1
         pbar.close()
         return res
 

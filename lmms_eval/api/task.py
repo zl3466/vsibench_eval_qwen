@@ -717,10 +717,17 @@ class ConfigurableTask(Task):
                     eval_logger.warning(f'Both target_delimiter "{self.config.target_delimiter}" and target choice: "{choice}" do not have whitespace, ignore if the language you are evaluating on does not require/use whitespace')
 
     def _prepare_model_specific_config(self):
+        # Using vsibench.yaml here
         self.lmms_eval_specific_kwargs = self.config.lmms_eval_specific_kwargs
         if self.lmms_eval_specific_kwargs is not None:
-            if self.model_name in self.lmms_eval_specific_kwargs:
-                self.lmms_eval_specific_kwargs = self.lmms_eval_specific_kwargs[self.model_name]
+            if self.model_name in ["qwen25vl", "qwen25vl_tuned"]:
+                if int(os.getenv("VSI_THOUGHT_PROCESS")) == 1:
+                    self.lmms_eval_specific_kwargs = self.lmms_eval_specific_kwargs[self.model_name]
+                else:
+                    self.lmms_eval_specific_kwargs.update(self.lmms_eval_specific_kwargs.get("default", {}))
+            else:
+                if self.model_name in self.lmms_eval_specific_kwargs:
+                    self.lmms_eval_specific_kwargs = self.lmms_eval_specific_kwargs[self.model_name]
             if "default" in self.lmms_eval_specific_kwargs:
                 print(f"model name {self.model_name} not found in vsibench.yaml. Using default.")
                 self.lmms_eval_specific_kwargs.update(self.lmms_eval_specific_kwargs.get("default", {}))

@@ -12,6 +12,8 @@ fi
 export OPENAI_API_KEY="" # API KEY FOR OPENAI CHATGPT
 export GOOGLE_API_KEY="" # API KEY FOR GOGOLE GEMINI
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
+export VSI_THOUGHT_PROCESS=0
+export VSI_DATASET="mini"
 
 benchmark=vsibench
 output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
