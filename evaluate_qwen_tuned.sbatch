@@ -1,0 +1,148 @@
+#!/bin/bash
+#
+#SBATCH --job-name=evgr
+#SBATCH --output=/scratch/zl3466/github/thinking_in_street/eval_result/gr.out
+#SBATCH --nodes=1
+#SBATCH --ntasks-per-node=1
+#SBATCH --cpus-per-task=32
+#SBATCH --mem=128GB
+#SBATCH --time=48:00:00
+#SBATCH --gres=gpu:a100:2
+#SBATCH --mail-type=ALL
+#SBATCH --mail-user=zl3466@nyu.edu
+#SBATCH --account=pr_116_tandon_priority
+
+module purge;
+module load anaconda3/2020.07;
+source /share/apps/anaconda3/2020.07/etc/profile.d/conda.sh;
+conda activate /scratch/zl3466/env/vsibench/;
+export PATH=/scratch/zl3466/env/vsibench/bin:$PATH;
+cd /scratch/zl3466/github/vsibench_eval_qwen;
+export HUGGING_FACE_HUB_TOKEN=""
+export HF_HUB_CACHE="/scratch/zl3466/.cache/huggingface/hub"
+
+set -e
+
+if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
+    gpu_count=$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)
+else
+    IFS=',' read -r -a devices <<< "$CUDA_VISIBLE_DEVICES"
+    gpu_count=${#devices[@]}
+fi
+
+export OPENAI_API_KEY="" # API KEY FOR OPENAI CHATGPT
+export GOOGLE_API_KEY="" # API KEY FOR GOGOLE GEMINI
+export VLLM_WORKER_MULTIPROC_METHOD=spawn
+export VSI_THOUGHT_PROCESS=0
+export VSI_DATASET="full"
+
+benchmark=vsibench
+output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
+num_processes=4
+num_frames=32
+launcher=accelerate
+
+available_models="llava_one_vision_qwen2_0p5b_ov_32f,llava_one_vision_qwen2_7b_ov_32f,llava_next_video_7b_qwen2_32f,llama3_vila1p5_8b_32f,llama3_longvila_8b_128frames_32f,longva_7b_32f,internvl2_2b_8f,internvl2_8b_8f"
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+    --benchmark)
+        benchmark="$2"
+        shift 2
+        ;;
+    --num_processes)
+        num_processes="$2"
+        shift 2
+        ;;
+    --model)
+        IFS=',' read -r -a models <<<"$2"
+        shift 2
+        ;;
+    --output_path)
+        output_path="$2"
+        shift 2
+        ;;
+    --limit)
+        limit="$2"
+        shift 2
+        ;;
+    *)
+        echo "Unknown argument: $1"
+        exit 1
+        ;;
+    esac
+done
+
+if [ "$models" = "all" ]; then
+    IFS=',' read -r -a models <<<"$available_models"
+fi
+
+for model in "${models[@]}"; do
+    echo "Start evaluating $model..."
+
+    case "$model" in
+    "qwen25_7b")
+        model_family="qwen25vl"
+        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/scratch/zl3466/github/thinking_in_street/model/Qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=1
+        ;;
+    "qwen25_7b_sft")
+        model_family="qwen25vl_tuned"
+        model_args="pretrained=/scratch/zl3466/github/thinking_in_street/log/Qwen2.5-VL-7B-GRPO-a100-16frames_0-400_sft_nt/checkpoint-2393,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=4
+        ;;
+    # "qwen25_7b_tuned_tp")
+    #     model_family="qwen25vl_tuned"
+    #     model_args="pretrained=/scratch/zl3466/github/thinking_in_street/log/Qwen2.5-VL-7B-GRPO-a100-16frames_0-400/checkpoint-2393,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+    #     num_processes=1
+    #     ;;
+    "qwen25_7b_tuned")
+        model_family="qwen25vl_tuned"
+        model_args="pretrained=/scratch/zl3466/github/thinking_in_street/log/3_dataset/7B+grpo/checkpoint-10684,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=4
+        ;;
+    "qwen25_3b")
+        model_family="qwen25vl"
+        model_args="pretrained=Qwen/Qwen2.5-VL-3B-Instruct,download_dir=/scratch/zl3466/github/thinking_in_street/model/Qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=4
+        ;;
+    "qwen25_3b_tuned")
+        model_family="qwen25vl_tuned"
+        model_args="pretrained=/scratch/zl3466/github/thinking_in_street/log/Qwen2.5-VL-3B-GRPO-100-rtx8000-sbatch/checkpoint-600,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=4
+        ;;
+    *)
+        echo "Unknown model: $model"
+        exit -1
+        ;;
+    esac
+
+    if [ "$launcher" = "python" ]; then
+        export LMMS_EVAL_LAUNCHER="python"
+        evaluate_script="python \
+            "
+    elif [ "$launcher" = "accelerate" ]; then
+        export LMMS_EVAL_LAUNCHER="accelerate"
+        evaluate_script="accelerate launch \
+            --num_processes=$num_processes \
+            "
+    fi
+
+    evaluate_script="$evaluate_script -m lmms_eval \
+        --model $model_family \
+        --model_args $model_args \
+        --tasks $benchmark \
+        --batch_size 1 \
+        --log_samples \
+        --log_samples_suffix $model \
+        --output_path $output_path/$benchmark \
+        "
+
+    if [ -n "$limit" ]; then
+        evaluate_script="$evaluate_script \
+            --limit $limit \
+        "
+    fi
+    echo $evaluate_script
+    eval $evaluate_script
+done
