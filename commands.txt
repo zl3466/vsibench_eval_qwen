@@ -6,13 +6,13 @@ conda activate /scratch/zl3466/env/vsibench
 bash evaluate_all_in_one.sh --model qwen25_7b --num_processes 8 --benchmark vsibench
 
 # 72B
-sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench
+sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench --hf 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
 # 7B
-sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench
+sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench --hf 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
 # 7B + tuned
-sbatch evaluate_qwen_tuned.sbatch --model qwen25_7b_tuned --num_processes 8 --benchmark vsibench
+sbatch evaluate_qwen_tuned.sbatch --model qwen25_7b_tuned --num_processes 8 --benchmark vsibench --hf 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
 # 7B + tuned + temporal
-sbatch evaluate_qwen_tuned_tp.sbatch --model qwen25_7b_tuned_tp --num_processes 8 --benchmark vsibench
+sbatch evaluate_qwen_tuned_tp.sbatch --model qwen25_7b_tuned_tp --num_processes 8 --benchmark vsibench --hf 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
 
 
 # 7B + sft + tuned

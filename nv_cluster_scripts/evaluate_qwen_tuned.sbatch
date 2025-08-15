@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-#SBATCH --job-name=72B_th
-#SBATCH --output=/scratch/zl3466/github/thinking_in_street/eval_result/72B_thought.out
+#SBATCH --job-name=evgr
+#SBATCH --output=/scratch/zl3466/github/thinking_in_street/eval_result/gr.out
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
 #SBATCH --cpus-per-task=32
 #SBATCH --mem=128GB
 #SBATCH --time=48:00:00
-#SBATCH --gres=gpu:a100:4
+#SBATCH --gres=gpu:a100:2
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=zl3466@nyu.edu
 #SBATCH --account=pr_116_tandon_priority
@@ -19,7 +19,7 @@ conda activate /scratch/zl3466/env/vsibench/;
 export PATH=/scratch/zl3466/env/vsibench/bin:$PATH;
 cd /scratch/zl3466/github/vsibench_eval_qwen;
 export HUGGING_FACE_HUB_TOKEN=""
-export HF_HUB_CACHE="/scratch/zl3466/.cache/huggingface/hub"
+export HF_HUB_CACHE="/lustre/fsw/portfolios/nvr/users/ymingli/cache/huggingface/hub"
 
 set -e
 
@@ -33,7 +33,7 @@ fi
 export OPENAI_API_KEY="" # API KEY FOR OPENAI CHATGPT
 export GOOGLE_API_KEY="" # API KEY FOR GOGOLE GEMINI
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
-export VSI_THOUGHT_PROCESS=1
+export VSI_THOUGHT_PROCESS=0
 export VSI_DATASET="full"
 
 benchmark=vsibench
@@ -81,30 +81,20 @@ for model in "${models[@]}"; do
     echo "Start evaluating $model..."
 
     case "$model" in
-    "qwen25_72b")
-        model_family="qwen25vl"
-        model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/scratch/zl3466/github/thinking_in_street/model/Qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1
-        ;;
     "qwen25_7b")
         model_family="qwen25vl"
-        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/scratch/zl3466/github/thinking_in_street/model/Qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/zl3466/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
+        ;;
+    "qwen25_7b_sft")
+        model_family="qwen25vl_tuned"
+        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/zl3466/models/vlm_odom/7B+sft+grpo,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=4
         ;;
     "qwen25_7b_tuned")
         model_family="qwen25vl_tuned"
-        model_args="pretrained=/scratch/zl3466/github/thinking_in_street/log/Qwen2.5-VL-7B-GRPO-200-a100-16frames-no-temporal-sbatch/checkpoint-600,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1
-        ;;
-    "qwen25_3b")
-        model_family="qwen25vl"
-        model_args="pretrained=Qwen/Qwen2.5-VL-3B-Instruct,download_dir=/scratch/zl3466/github/thinking_in_street/model/Qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1
-        ;;
-    "qwen25_3b_tuned")
-        model_family="qwen25vl_tuned"
-        model_args="pretrained=/scratch/zl3466/github/thinking_in_street/log/Qwen2.5-VL-3B-GRPO-100-rtx8000-sbatch/checkpoint-600,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1
+        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/zl3466/models/vlm_odom/7B+grpo,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=4
         ;;
     *)
         echo "Unknown model: $model"
