@@ -1,18 +1,22 @@
+pip install vllm
+pip install qwen-vl-utils
+
+
 cd /scratch/zl3466/github/vsibench_eval_qwen
 conda activate /scratch/zl3466/env/vsibench
 
 
 
 bash evaluate_all_in_one.sh --model qwen25_7b --num_processes 8 --benchmark vsibench
-bash nv_cluster_scripts/evaluate_qwen.sh --model qwen25_7b --num_processes 8 --benchmark vsibench --hf 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
+CUDA_VISIBLE_DEVICES=0,1,2,3 bash nv_cluster_scripts/evaluate_qwen.sh --model qwen25_7b --num_processes 4 --benchmark vsibench --hf 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
 # 72B
-sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench --hf 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
+sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench --hf 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
 # 7B
-sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench --hf 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
+sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench --hf 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
 # 7B + tuned
-sbatch evaluate_qwen_tuned.sbatch --model qwen25_7b_tuned --num_processes 8 --benchmark vsibench --hf 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
+sbatch evaluate_qwen_tuned.sbatch --model qwen25_7b_tuned --num_processes 8 --benchmark vsibench --hf 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
 # 7B + tuned + temporal
-sbatch evaluate_qwen_tuned_tp.sbatch --model qwen25_7b_tuned_tp --num_processes 8 --benchmark vsibench --hf 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
+sbatch evaluate_qwen_tuned_tp.sbatch --model qwen25_7b_tuned_tp --num_processes 8 --benchmark vsibench --hf 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
 
 
 # 7B + sft + tuned
