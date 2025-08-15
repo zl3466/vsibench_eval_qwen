@@ -7,7 +7,13 @@ export HF_HUB_CACHE="/lustre/fsw/portfolios/nvr/users/ymingli/cache/huggingface/
 set -e
 
 if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
-    gpu_count=$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)
+    if command -v nvidia-smi &> /dev/null; then
+        gpu_count=$(nvidia-smi --query-gpu=index --format=csv,noheader | wc -l)
+    else
+        # Default to 1 GPU if nvidia-smi is not available
+        gpu_count=1
+        echo "Warning: nvidia-smi not found, defaulting to 1 GPU"
+    fi
 else
     IFS=',' read -r -a devices <<< "$CUDA_VISIBLE_DEVICES"
     gpu_count=${#devices[@]}
@@ -73,12 +79,12 @@ for model in "${models[@]}"; do
     "qwen25_72b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/zl3466/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1
+#        num_processes=$num_processes
         ;;
     "qwen25_7b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/zl3466/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1
+        # Allow multi-GPU for 7B model
         ;;
     *)
         echo "Unknown model: $model"
