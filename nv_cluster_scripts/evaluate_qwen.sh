@@ -1,3 +1,5 @@
+#!/bin/bash
+
 #conda activate vsibench;
 #export HUGGING_FACE_HUB_TOKEN=""
 export HF_HUB_CACHE="/lustre/fsw/portfolios/nvr/users/ymingli/cache/huggingface/hub"

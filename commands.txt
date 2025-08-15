@@ -4,7 +4,7 @@ conda activate /scratch/zl3466/env/vsibench
 
 
 bash evaluate_all_in_one.sh --model qwen25_7b --num_processes 8 --benchmark vsibench
-
+bash nv_cluster_scripts/evaluate_qwen.sh --model qwen25_7b --num_processes 8 --benchmark vsibench --hf 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
 # 72B
 sbatch evaluate_qwen.sbatch --model qwen25_7b --num_processes 8 --benchmark vsibench --hf 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
 # 7B
