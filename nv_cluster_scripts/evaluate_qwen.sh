@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Add user site-packages to Python path
+export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
 # Source conda and activate environment
 source /lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/etc/profile.d/conda.sh
 conda activate vsibench
