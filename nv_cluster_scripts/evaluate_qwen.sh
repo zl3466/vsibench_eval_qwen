@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # Source conda and activate environment
+export PATH="/home/ymingli/miniconda3/bin:$PATH"
 source /home/ymingli/miniconda3/etc/profile.d/conda.sh
 conda activate vsibench
 #export HUGGING_FACE_HUB_TOKEN=""
