@@ -1,6 +1,9 @@
 #!/bin/bash
 
-conda activate vsibench;
+# Source conda and activate environment
+source /home/ymingli/miniconda3/etc/profile.d/conda.sh
+conda activate vsibench
+
 #export HUGGING_FACE_HUB_TOKEN=""
 export HF_HUB_CACHE="/lustre/fsw/portfolios/nvr/users/ymingli/cache/huggingface/hub"
 
