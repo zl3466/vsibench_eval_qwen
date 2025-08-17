@@ -2,6 +2,14 @@
 
 # Add user site-packages to Python path
 export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
+
+# Debug GPU detection
+echo "=== GPU Debug Information ==="
+echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
+echo "Available GPUs:"
+nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader
+echo "============================="
+
 # Source conda and activate environment
 source /lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/etc/profile.d/conda.sh
 conda activate vsibench
@@ -116,6 +124,14 @@ for model in "${models[@]}"; do
             --limit $limit \
         "
     fi
-    echo $evaluate_script
+    
+    echo "=== Evaluation Command Debug ==="
+    echo "Model family: $model_family"
+    echo "Model args: $model_args"
+    echo "Num processes: $num_processes"
+    echo "Launcher: $launcher"
+    echo "Full command: $evaluate_script"
+    echo "================================"
+    
     eval $evaluate_script
 done
