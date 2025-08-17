@@ -326,6 +326,7 @@ def cli_evaluate(args: Union[argparse.Namespace, None] = None) -> None:
             args_list.append(args_copy)
     else:
         args_list.append(args)
+    eval_logger.info(f"Config Loaded: {args.config}\n")
 
     if IS_ACCELERATE_LAUNCHED:
         # initialize Accelerator
@@ -337,6 +338,7 @@ def cli_evaluate(args: Union[argparse.Namespace, None] = None) -> None:
             is_main_process = False
     else:
         is_main_process = True
+    eval_logger.info(f"Accelerator Started\n")
 
     for args in args_list:
         try:
