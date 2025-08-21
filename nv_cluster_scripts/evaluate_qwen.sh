@@ -85,7 +85,7 @@ for model in "${models[@]}"; do
     "qwen25_72b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,modality=video"
-#        num_processes=1  # Use 1 process, let device_map handle multi-GPU
+        num_processes=$num_processes
         ;;
     "qwen25_7b")
         model_family="qwen25vl"
