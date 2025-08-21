@@ -35,7 +35,7 @@ benchmark=vsibench
 output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
 num_processes=8
 num_frames=32
-launcher=python
+launcher=accelerate
 
 available_models="llava_one_vision_qwen2_0p5b_ov_32f,llava_one_vision_qwen2_7b_ov_32f,llava_next_video_7b_qwen2_32f,llama3_vila1p5_8b_32f,llama3_longvila_8b_128frames_32f,longva_7b_32f,internvl2_2b_8f,internvl2_8b_8f"
 
@@ -84,13 +84,14 @@ for model in "${models[@]}"; do
     case "$model" in
     "qwen25_72b")
         model_family="qwen25vl"
-        model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1  # Use 1 process, let device_map handle multi-GPU
+        model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,modality=video"
+#        num_processes=1  # Use 1 process, let device_map handle multi-GPU
         ;;
     "qwen25_7b")
         model_family="qwen25vl"
-        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1  # Use 1 process, let device_map handle multi-GPU
+        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,modality=video"
+        num_processes=$num_processes  # Use 8 processes for data parallelism across 8 GPUs
+        # launcher=accelerate  # Use accelerate for multi-GPU distribution
         ;;
     *)
         echo "Unknown model: $model"
