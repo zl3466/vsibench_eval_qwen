@@ -145,6 +145,14 @@ for model in "${models[@]}"; do
     echo "Launcher: $launcher"
     echo "Full command: $evaluate_script"
     echo "================================"
-    
+
+    echo "=== Debug Parallelism Parameters ==="
+    echo "tensor_parallel_size: $tensor_parallel_size"
+    echo "pipeline_parallel_size: $pipeline_parallel_size"
+    echo "model_args: $model_args"
+    echo "================================="
+
+    echo "Full command: $evaluate_script"
+
     eval $evaluate_script
 done
