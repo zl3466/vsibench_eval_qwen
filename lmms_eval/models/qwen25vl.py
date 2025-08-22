@@ -49,15 +49,23 @@ class Qwen25VL(lmms):
         device_map: str = "cuda",
         batch_size: str = "1",
         max_frames_num: int = None,
+        tensor_parallel_size: int = None,
+        pipeline_parallel_size: int = 1,
         **kwargs,
     ):
         super().__init__()
 
         self.path = pretrained
+        
+        # Set default tensor_parallel_size if not provided
+        if tensor_parallel_size is None:
+            tensor_parallel_size = torch.cuda.device_count()
+        
         self._model = LLM(
             self.path,
             download_dir=download_dir,
-            tensor_parallel_size=torch.cuda.device_count(),
+            tensor_parallel_size=tensor_parallel_size,
+            pipeline_parallel_size=pipeline_parallel_size,
             max_model_len=30720,
             gpu_memory_utilization=0.7
         )
