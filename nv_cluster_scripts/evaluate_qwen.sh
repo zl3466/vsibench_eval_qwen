@@ -45,6 +45,14 @@ while [[ $# -gt 0 ]]; do
         benchmark="$2"
         shift 2
         ;;
+    --tensor_parallel_size)
+        tensor_parallel_size="$2"
+        shift 2
+        ;;
+    --pipeline_parallel_size)
+        pipeline_parallel_size="$2"
+        shift 2
+        ;;
     --num_processes)
         num_processes="$2"
         shift 2
@@ -84,14 +92,14 @@ for model in "${models[@]}"; do
     case "$model" in
     "qwen25_72b")
         model_family="qwen25vl"
-        model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,tensor_parallel_size=4,pipeline_parallel_size=2,modality=video"
+        model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,tensor_parallel_size=$tensor_parallel_size,pipeline_parallel_size=$pipeline_parallel_size,modality=video"
 #        num_processes=1
 #        model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,modality=video"
         num_processes=$num_processes
         ;;
     "qwen25_7b")
         model_family="qwen25vl"
-        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,tensor_parallel_size=4,pipeline_parallel_size=2,modality=video"
+        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,tensor_parallel_size=$tensor_parallel_size,pipeline_parallel_size=$pipeline_parallel_size,modality=video"
 #        num_processes=1
 #        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=0,modality=video"
         num_processes=$num_processes  # Use 8 processes for data parallelism across 8 GPUs
