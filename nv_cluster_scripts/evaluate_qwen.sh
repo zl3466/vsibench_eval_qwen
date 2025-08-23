@@ -53,12 +53,18 @@ while [[ $# -gt 0 ]]; do
         limit="$2"
         shift 2
         ;;
+    --hf)
+        hf="$2"
+        shift 2
+        ;;
     *)
         echo "Unknown argument: $1"
         exit 1
         ;;
     esac
 done
+
+export HUGGING_FACE_HUB_TOKEN="$hf"
 
 if [ "$models" = "all" ]; then
     IFS=',' read -r -a models <<<"$available_models"
