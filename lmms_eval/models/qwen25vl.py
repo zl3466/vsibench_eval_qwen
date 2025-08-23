@@ -69,7 +69,13 @@ class Qwen25VL(lmms):
             max_model_len=30720,
             gpu_memory_utilization=0.7
         )
+        print("vLLM model initialized successfully!")
+
+        print("About to load processor...")
         self._processor = AutoProcessor.from_pretrained(self.path)
+        print("Processor loaded successfully!")
+
+        print("About to load tokenizer...")
         self._tokenizer = AutoTokenizer.from_pretrained(self.path, trust_remote_code=True)
         print("Done loading processor and tokenizer")
         self.sampling_params = SamplingParams(temperature=0, max_tokens=1024)
