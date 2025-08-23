@@ -76,7 +76,11 @@ def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
     if os.getenv('LMMS_EVAL_SHUFFLE_DOCS', None):
         eval_logger.info(f"Environment variable LMMS_EVAL_SHUFFLE_DOCS detected, dataset will be shuffled.")
         return dataset.shuffle(seed=42)
+    
+    # Simplified filtering to avoid hanging
+    eval_logger.info(f"Processing dataset with {len(dataset)} samples")
     if os.getenv("VSI_DATASET") == "mini":
+        eval_logger.info("Using mini dataset")
         subset_indexes = [3, 9, 22, 27, 37, 41, 42, 80, 81, 91, 106, 125, 141, 145, 151, 153, 154, 166, 182, 188, 202, 206,
                           219, 285, 289, 379, 380, 423, 427, 435, 443, 446, 462, 463, 485, 512, 515, 521, 530, 534, 536,
                           552, 556, 562, 565, 586, 594, 602, 608, 609, 610, 613, 616, 617, 619, 626, 654, 661, 662, 666,
@@ -115,6 +119,7 @@ def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
             x['question_type'].startswith('route_planning'))
         return datasets
     else:
+        eval_logger.info("Using full dataset")
         datasets = dataset.filter(
             lambda x:
             x['question_type'].startswith("object_rel_distance") or
