@@ -409,7 +409,9 @@ def cli_evaluate_single(args: Union[argparse.Namespace, None] = None) -> None:
     if args.include_path is not None:
         eval_logger.info(f"Including path: {args.include_path}")
 
+    eval_logger.info("About to initialize TaskManager...")
     task_manager = TaskManager(args.verbosity, include_path=args.include_path, model_name=args.model)
+    eval_logger.info("TaskManager initialized successfully!")
 
     if "push_samples_to_hub" in evaluation_tracker_args and not args.log_samples:
         eval_logger.warning("Pushing samples to the Hub requires --log_samples to be set. Samples will not be pushed to the Hub.")
