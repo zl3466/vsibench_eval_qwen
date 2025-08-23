@@ -60,7 +60,7 @@ class Qwen25VL(lmms):
         # Set default tensor_parallel_size if not provided
         if tensor_parallel_size is None:
             tensor_parallel_size = torch.cuda.device_count()
-        
+        print(f"\n tensor_parallel_size: {tensor_parallel_size}, pipeline_parallel_size: {pipeline_parallel_size} \n")
         self._model = LLM(
             self.path,
             download_dir=download_dir,
