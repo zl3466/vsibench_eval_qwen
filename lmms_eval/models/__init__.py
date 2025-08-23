@@ -49,17 +49,12 @@ AVAILABLE_MODELS = {
 
 
 def get_model(model_name):
-    print(f"Attempting to load model: {model_name}")
     if model_name not in AVAILABLE_MODELS:
         raise ValueError(f"Model {model_name} not found in available models.")
 
     model_class = AVAILABLE_MODELS[model_name]
-    print(f"Model class: {model_class}")
     try:
-        print(f"Importing module: lmms_eval.models.{model_name}")
         module = __import__(f"lmms_eval.models.{model_name}", fromlist=[model_class])
-        print(f"Module imported successfully: {module}")
-        print(f"Getting attribute: {model_class}")
         return getattr(module, model_class)
     except Exception as e:
         logger.error(f"Failed to import {model_class} from {model_name}: {e}")

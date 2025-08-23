@@ -54,17 +54,13 @@ class Qwen25VL(lmms):
         **kwargs,
     ):
         super().__init__()
-        print("Starting Qwen25VL model initialization...")
 
         self.path = pretrained
-        print(f"Model path: {self.path}")
         
         # Set default tensor_parallel_size if not provided
         if tensor_parallel_size is None:
             tensor_parallel_size = torch.cuda.device_count()
         print(f"\n tensor_parallel_size: {tensor_parallel_size}, pipeline_parallel_size: {pipeline_parallel_size} \n")
-        
-        print("Initializing vLLM model...")
         self._model = LLM(
             self.path,
             download_dir=download_dir,
@@ -73,16 +69,8 @@ class Qwen25VL(lmms):
             max_model_len=30720,
             gpu_memory_utilization=0.7
         )
-        print("vLLM model initialized successfully!")
-        
-        print("Loading processor...")
         self._processor = AutoProcessor.from_pretrained(self.path)
-        print("Processor loaded successfully!")
-        
-        print("Loading tokenizer...")
         self._tokenizer = AutoTokenizer.from_pretrained(self.path, trust_remote_code=True)
-        print("Tokenizer loaded successfully!")
-        
         print("Done loading processor and tokenizer")
         self.sampling_params = SamplingParams(temperature=0, max_tokens=1024)
 
