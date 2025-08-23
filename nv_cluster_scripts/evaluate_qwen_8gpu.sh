@@ -46,7 +46,7 @@ benchmark=vsibench
 output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
 num_processes=8
 num_frames=32
-launcher=accelerate
+launcher=python
 
 tensor_parallel_size=None
 pipeline_parallel_size=1
