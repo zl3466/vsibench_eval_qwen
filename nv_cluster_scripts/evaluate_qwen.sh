@@ -3,6 +3,17 @@
 # Add user site-packages to Python path
 export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
 
+# Override cluster distributed settings for vLLM single-process execution
+export WORLD_SIZE=1
+export RANK=0
+export LOCAL_RANK=0
+export MASTER_ADDR=127.0.0.1
+export MASTER_PORT=29500
+unset SLURM_PROCID
+unset SLURM_LOCALID
+unset SLURM_NTASKS
+unset SLURM_NPROCS
+
 # Debug GPU detection
 echo "=== GPU Debug Information ==="
 echo "CUDA_VISIBLE_DEVICES: $CUDA_VISIBLE_DEVICES"
