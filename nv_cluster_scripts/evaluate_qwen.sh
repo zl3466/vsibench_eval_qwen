@@ -46,7 +46,7 @@ benchmark=vsibench
 output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
 num_processes=8
 num_frames=32
-launcher=python
+launcher=accelerate
 
 tensor_parallel_size=None
 pipeline_parallel_size=1
@@ -113,12 +113,13 @@ for model in "${models[@]}"; do
     "qwen25_7b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,tensor_parallel_size=$tensor_parallel_size,pipeline_parallel_size=$pipeline_parallel_size,modality=video"
-        num_processes=1  # Use 1 process when using python launcher
+#        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=0,modality=video"
+        num_processes=1  # Use 8 processes for data parallelism across 8 GPUs
         ;;
     "qwen25vl_tuned")
         model_family="qwen25vl_tuned"
         model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,tensor_parallel_size=$tensor_parallel_size,pipeline_parallel_size=$pipeline_parallel_size,modality=video"
-        num_processes=1  # Use 1 process when using python launcher
+        num_processes=1  # Use 1 process to avoid distributed training issues
         ;;
     *)
         echo "Unknown model: $model"
