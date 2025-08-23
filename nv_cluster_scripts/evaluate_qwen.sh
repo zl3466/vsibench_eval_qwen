@@ -3,16 +3,16 @@
 # Add user site-packages to Python path
 export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
 
-# Override cluster distributed settings for vLLM single-process execution
-export WORLD_SIZE=1
-export RANK=0
-export LOCAL_RANK=0
-export MASTER_ADDR=127.0.0.1
-export MASTER_PORT=29500
-unset SLURM_PROCID
-unset SLURM_LOCALID
-unset SLURM_NTASKS
-unset SLURM_NPROCS
+## Override cluster distributed settings for vLLM single-process execution
+#export WORLD_SIZE=1
+#export RANK=0
+#export LOCAL_RANK=0
+#export MASTER_ADDR=127.0.0.1
+#export MASTER_PORT=29500
+#unset SLURM_PROCID
+#unset SLURM_LOCALID
+#unset SLURM_NTASKS
+#unset SLURM_NPROCS
 
 # Debug GPU detection
 echo "=== GPU Debug Information ==="
@@ -46,8 +46,9 @@ benchmark=vsibench
 output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
 num_processes=8
 num_frames=32
-launcher=python
-tensor_parallel_size=1
+launcher=accelerate
+
+tensor_parallel_size=None
 pipeline_parallel_size=1
 
 available_models="llava_one_vision_qwen2_0p5b_ov_32f,llava_one_vision_qwen2_7b_ov_32f,llava_next_video_7b_qwen2_32f,llama3_vila1p5_8b_32f,llama3_longvila_8b_128frames_32f,longva_7b_32f,internvl2_2b_8f,internvl2_8b_8f"
@@ -106,17 +107,14 @@ for model in "${models[@]}"; do
     "qwen25_72b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,tensor_parallel_size=$tensor_parallel_size,pipeline_parallel_size=$pipeline_parallel_size,modality=video"
-#        num_processes=1
 #        model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,modality=video"
         num_processes=$num_processes
         ;;
     "qwen25_7b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,tensor_parallel_size=$tensor_parallel_size,pipeline_parallel_size=$pipeline_parallel_size,modality=video"
-#        num_processes=1
 #        model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=0,modality=video"
         num_processes=$num_processes  # Use 8 processes for data parallelism across 8 GPUs
-        # launcher=accelerate  # Use accelerate for multi-GPU distribution
         ;;
     "qwen25vl_tuned")
         model_family="qwen25vl_tuned"
