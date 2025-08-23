@@ -61,11 +61,18 @@ class Qwen25VL(lmms):
         if tensor_parallel_size is None:
             tensor_parallel_size = torch.cuda.device_count()
         print(f"\n tensor_parallel_size: {tensor_parallel_size}, pipeline_parallel_size: {pipeline_parallel_size} \n")
+        # self._model = LLM(
+        #     self.path,
+        #     download_dir=download_dir,
+        #     tensor_parallel_size=tensor_parallel_size,
+        #     pipeline_parallel_size=pipeline_parallel_size,
+        #     max_model_len=30720,
+        #     gpu_memory_utilization=0.7
+        # )
         self._model = LLM(
             self.path,
             download_dir=download_dir,
-            tensor_parallel_size=tensor_parallel_size,
-            pipeline_parallel_size=pipeline_parallel_size,
+            tensor_parallel_size=torch.cuda.device_count(),
             max_model_len=30720,
             gpu_memory_utilization=0.7
         )
