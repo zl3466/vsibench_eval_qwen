@@ -77,12 +77,12 @@ for model in "${models[@]}"; do
     "qwen25_72b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1
+#        num_processes=4  # Use 4 processes for data parallelism across 4 GPUs
         ;;
     "qwen25_7b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-        num_processes=1
+#        num_processes=4  # Use 4 processes for data parallelism across 4 GPUs
         ;;
     *)
         echo "Unknown model: $model"
