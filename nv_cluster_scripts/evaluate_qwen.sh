@@ -28,18 +28,6 @@ else
     gpu_count=${#devices[@]}
 fi
 
-export OPENAI_API_KEY="" # API KEY FOR OPENAI CHATGPT
-export GOOGLE_API_KEY="" # API KEY FOR GOGOLE GEMINI
-export VLLM_WORKER_MULTIPROC_METHOD=spawn
-export VSI_THOUGHT_PROCESS=1
-export VSI_DATASET="full"
-
-benchmark=vsibench
-output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
-num_processes=4
-num_frames=32
-launcher=python
-
 available_models="llava_one_vision_qwen2_0p5b_ov_32f,llava_one_vision_qwen2_7b_ov_32f,llava_next_video_7b_qwen2_32f,llama3_vila1p5_8b_32f,llama3_longvila_8b_128frames_32f,longva_7b_32f,internvl2_2b_8f,internvl2_8b_8f"
 
 while [[ $# -gt 0 ]]; do
@@ -68,6 +56,10 @@ while [[ $# -gt 0 ]]; do
         hf="$2"
         shift 2
         ;;
+    --thought)
+        thought="$2"
+        shift 2
+        ;;
     *)
         echo "Unknown argument: $1"
         exit 1
@@ -75,7 +67,16 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
+export VLLM_WORKER_MULTIPROC_METHOD=spawn
+export VSI_THOUGHT_PROCESS=$thought
+export VSI_DATASET="full"
 export HUGGING_FACE_HUB_TOKEN="$hf"
+
+benchmark=vsibench
+output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
+num_processes=4
+num_frames=32
+launcher=python
 
 if [ "$models" = "all" ]; then
     IFS=',' read -r -a models <<<"$available_models"
@@ -88,12 +89,12 @@ for model in "${models[@]}"; do
     "qwen25_72b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-72B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-       num_processes=1  # Use 4 processes for data parallelism across 4 GPUs
+        num_processes=1  # Use 4 processes for data parallelism across 4 GPUs
         ;;
     "qwen25_7b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
-       num_processes=1  # Use 4 processes for data parallelism across 4 GPUs
+        num_processes=1  # Use 4 processes for data parallelism across 4 GPUs
         ;;
     *)
         echo "Unknown model: $model"
