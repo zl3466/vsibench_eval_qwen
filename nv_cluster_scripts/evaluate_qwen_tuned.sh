@@ -94,12 +94,12 @@ for model in "${models[@]}"; do
         ;;
     "qwen25_7b_sft")
         model_family="qwen25vl_tuned"
-        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/vlm_odom/7B+sft+grpo,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/vlm_odom/7B+sft+grpo/checkpoint-10684,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     "qwen25_7b_tuned")
         model_family="qwen25vl_tuned"
-        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/vlm_odom/7B+grpo,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/vlm_odom/7B+grpo/checkpoint-10684,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     *)
