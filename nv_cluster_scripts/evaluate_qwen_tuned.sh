@@ -10,6 +10,7 @@ unset SLURM_PROCID
 unset SLURM_LOCALID
 unset SLURM_NTASKS
 unset SLURM_NPROCS
+export VLLM_PLATFORM=cuda
 
 # Add user site-packages to Python path
 export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
