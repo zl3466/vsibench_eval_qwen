@@ -74,9 +74,9 @@ export HUGGING_FACE_HUB_TOKEN="$hf"
 
 benchmark=vsibench
 output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
-num_processes=4
+num_processes=1
 num_frames=32
-launcher=python
+launcher=accelerate
 
 
 if [ "$models" = "all" ]; then
