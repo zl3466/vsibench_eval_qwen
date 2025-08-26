@@ -27,7 +27,11 @@ else
     IFS=',' read -r -a devices <<< "$CUDA_VISIBLE_DEVICES"
     gpu_count=${#devices[@]}
 fi
-
+benchmark=vsibench
+output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
+num_processes=1
+num_frames=32
+launcher=accelerate
 available_models="llava_one_vision_qwen2_0p5b_ov_32f,llava_one_vision_qwen2_7b_ov_32f,llava_next_video_7b_qwen2_32f,llama3_vila1p5_8b_32f,llama3_longvila_8b_128frames_32f,longva_7b_32f,internvl2_2b_8f,internvl2_8b_8f"
 
 while [[ $# -gt 0 ]]; do
@@ -72,11 +76,7 @@ export VSI_THOUGHT_PROCESS=$thought
 export VSI_DATASET="full"
 export HUGGING_FACE_HUB_TOKEN="$hf"
 
-benchmark=vsibench
-output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
-num_processes=1
-num_frames=32
-launcher=accelerate
+
 
 
 if [ "$models" = "all" ]; then
