@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
         shift 2
         ;;
     --num_processes)
-        n_processes="$2"
+        num_processes="$2"
         shift 2
         ;;
     --model)
@@ -113,11 +113,11 @@ for model in "${models[@]}"; do
     elif [ "$launcher" = "accelerate" ]; then
         export LMMS_EVAL_LAUNCHER="accelerate"
         evaluate_script="accelerate launch \
-            --num_processes=$n_processes \
+            --num_processes=$num_processes \
             "
     fi
 
-    echo "Num Processes Specified for Accelerated Run: $n_processes"
+    echo "Num Processes Specified for Accelerated Run: $num_processes"
 
     evaluate_script="$evaluate_script -m lmms_eval \
         --model $model_family \
