@@ -27,6 +27,7 @@ else
     IFS=',' read -r -a devices <<< "$CUDA_VISIBLE_DEVICES"
     gpu_count=${#devices[@]}
 fi
+
 benchmark=vsibench
 output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
 num_processes=1
@@ -76,9 +77,6 @@ export VSI_THOUGHT_PROCESS=$thought
 export VSI_DATASET="full"
 export HUGGING_FACE_HUB_TOKEN="$hf"
 
-
-
-
 if [ "$models" = "all" ]; then
     IFS=',' read -r -a models <<<"$available_models"
 fi
@@ -118,6 +116,8 @@ for model in "${models[@]}"; do
             --num_processes=$num_processes \
             "
     fi
+
+    echo "Num Processes Specified for Accelerated Run: $num_processes"
 
     evaluate_script="$evaluate_script -m lmms_eval \
         --model $model_family \
