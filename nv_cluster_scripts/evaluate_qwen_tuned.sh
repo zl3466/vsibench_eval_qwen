@@ -10,6 +10,17 @@
 #unset SLURM_LOCALID
 #unset SLURM_NTASKS
 #unset SLURM_NPROCS
+# Clear any distributed environment variables
+unset WORLD_SIZE
+unset RANK
+unset LOCAL_RANK
+unset MASTER_ADDR
+unset MASTER_PORT
+# Also clear SLURM variables
+unset SLURM_PROCID
+unset SLURM_LOCALID
+unset SLURM_NTASKS
+unset SLURM_NPROCS
 
 # Add user site-packages to Python path
 export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
