@@ -1,11 +1,11 @@
 #!/bin/bash
-# CRITICAL: Override any distributed environment for single-process execution
-export WORLD_SIZE=1
-export RANK=0
-export LOCAL_RANK=0
-export MASTER_ADDR=127.0.0.1
-export MASTER_PORT=29500
-# Clear any SLURM distributed variables that might be set by the job scheduler
+# Clear any distributed environment variables
+unset WORLD_SIZE
+unset RANK
+unset LOCAL_RANK
+unset MASTER_ADDR
+unset MASTER_PORT
+# Also clear SLURM variables
 unset SLURM_PROCID
 unset SLURM_LOCALID
 unset SLURM_NTASKS
@@ -19,7 +19,6 @@ conda activate vsibench
 #export HUGGING_FACE_HUB_TOKEN=""
 export HF_HUB_CACHE="/lustre/fsw/portfolios/nvr/users/ymingli/cache/huggingface/hub"
 
-
 set -e
 
 if [ -z "$CUDA_VISIBLE_DEVICES" ]; then
@@ -28,6 +27,12 @@ else
     IFS=',' read -r -a devices <<< "$CUDA_VISIBLE_DEVICES"
     gpu_count=${#devices[@]}
 fi
+
+benchmark=vsibench
+output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
+num_processes=1
+num_frames=32
+launcher=accelerate
 
 available_models="llava_one_vision_qwen2_0p5b_ov_32f,llava_one_vision_qwen2_7b_ov_32f,llava_next_video_7b_qwen2_32f,llama3_vila1p5_8b_32f,llama3_longvila_8b_128frames_32f,longva_7b_32f,internvl2_2b_8f,internvl2_8b_8f"
 
@@ -72,12 +77,6 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn
 export VSI_THOUGHT_PROCESS=$thought
 export VSI_DATASET="full"
 export HUGGING_FACE_HUB_TOKEN="$hf"
-
-benchmark=vsibench
-output_path=logs/$(TZ="America/New_York" date "+%Y%m%d")
-num_processes=4
-num_frames=32
-launcher=python
 
 if [ "$models" = "all" ]; then
     IFS=',' read -r -a models <<<"$available_models"
