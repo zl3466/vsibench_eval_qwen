@@ -1,15 +1,15 @@
 #!/bin/bash
 # CRITICAL: Override any distributed environment for single-process execution
-export WORLD_SIZE=1
-export RANK=0
-export LOCAL_RANK=0
-export MASTER_ADDR=127.0.0.1
-export MASTER_PORT=29500
-# Clear any SLURM distributed variables that might be set by the job scheduler
-unset SLURM_PROCID
-unset SLURM_LOCALID
-unset SLURM_NTASKS
-unset SLURM_NPROCS
+#export WORLD_SIZE=1
+#export RANK=0
+#export LOCAL_RANK=0
+#export MASTER_ADDR=127.0.0.1
+#export MASTER_PORT=29500
+## Clear any SLURM distributed variables that might be set by the job scheduler
+#unset SLURM_PROCID
+#unset SLURM_LOCALID
+#unset SLURM_NTASKS
+#unset SLURM_NPROCS
 
 # Add user site-packages to Python path
 export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
