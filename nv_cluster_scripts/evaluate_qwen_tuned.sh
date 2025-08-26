@@ -42,7 +42,7 @@ while [[ $# -gt 0 ]]; do
         shift 2
         ;;
     --num_processes)
-        num_processes="$2"
+        n_processes="$2"
         shift 2
         ;;
     --model)
@@ -88,14 +88,17 @@ for model in "${models[@]}"; do
     "qwen25_7b")
         model_family="qwen25vl"
         model_args="pretrained=Qwen/Qwen2.5-VL-7B-Instruct,download_dir=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/qwen,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=1
         ;;
     "qwen25_7b_sft")
         model_family="qwen25vl_tuned"
         model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/vlm_odom/7B+sft+grpo/checkpoint-10684,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=1
         ;;
     "qwen25_7b_tuned")
         model_family="qwen25vl_tuned"
         model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/models/vlm_odom/7B+grpo/checkpoint-10684,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        num_processes=1
         ;;
     *)
         echo "Unknown model: $model"
@@ -110,11 +113,11 @@ for model in "${models[@]}"; do
     elif [ "$launcher" = "accelerate" ]; then
         export LMMS_EVAL_LAUNCHER="accelerate"
         evaluate_script="accelerate launch \
-            --num_processes=$num_processes \
+            --num_processes=$n_processes \
             "
     fi
 
-    echo "Num Processes Specified for Accelerated Run: $num_processes"
+    echo "Num Processes Specified for Accelerated Run: $n_processes"
 
     evaluate_script="$evaluate_script -m lmms_eval \
         --model $model_family \
