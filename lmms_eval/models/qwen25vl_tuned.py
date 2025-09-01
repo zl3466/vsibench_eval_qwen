@@ -85,7 +85,7 @@ class Qwen25VL_tuned(lmms):
         self.sampling_params = SamplingParams(temperature=0, max_tokens=1024)
 
         batch_size = int(batch_size)
-        assert batch_size == 1, f"Batch size should be 1 for InternVL2, but got {batch_size}."
+        # assert batch_size == 1, f"Batch size should be 1 for InternVL2, but got {batch_size}."
         self.batch_size_per_gpu = batch_size
 
         self._config = None
