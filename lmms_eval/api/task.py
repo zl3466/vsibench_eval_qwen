@@ -724,7 +724,7 @@ class ConfigurableTask(Task):
                 if int(os.getenv("VSI_THOUGHT_PROCESS")) == 1:
                     self.lmms_eval_specific_kwargs = self.lmms_eval_specific_kwargs[self.model_name]
                 else:
-                    self.lmms_eval_specific_kwargs.update(self.lmms_eval_specific_kwargs.get("default", {}))
+                    self.lmms_eval_specific_kwargs.update(self.lmms_eval_specific_kwargs.get("qwen25vl_default", {}))
             else:
                 if self.model_name in self.lmms_eval_specific_kwargs:
                     self.lmms_eval_specific_kwargs = self.lmms_eval_specific_kwargs[self.model_name]
