@@ -122,7 +122,7 @@ for model in "${models[@]}"; do
         --model $model_family \
         --model_args $model_args \
         --tasks $benchmark \
-        --batch_size 4 \
+        --batch_size 2 \
         --log_samples \
         --log_samples_suffix $model \
         --output_path $output_path/$benchmark \

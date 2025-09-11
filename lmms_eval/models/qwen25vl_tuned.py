@@ -136,55 +136,74 @@ class Qwen25VL_tuned(lmms):
     def generate_until(self, requests) -> List[str]:
         res = []
         pbar = tqdm(total=len(requests), disable=(self.rank != 0), desc="Model Responding")
-        for contexts, gen_kwargs, doc_to_visual, doc_id, task, split in [reg.args for reg in requests]:
-            visuals = [doc_to_visual(self.task_dict[task][split][doc_id])]
-            visuals = self.flatten(visuals)
-            if self.modality == "image":
-                raise NotImplementedError("Image inference for Qwen2VL is not supported yet.")
-            elif self.modality == "video":
-                assert len(visuals) == 1, f"Only one video is supported, but got {len(visuals)} videos."
-                video_path = visuals[0]
-                messages = [
-                    {
-                        "role": "user",
-                        "content": [
-                            {
-                                "type": "video",
-                                "video": f"{video_path}",
-                                # "max_pixels": 360 * 420,
-                                # "nframes": self.max_frames_num,
-                            },
-                            {"type": "text", "text": f"{contexts}"},
-                        ],
-                    }
-                ]
-                if self.max_frames_num:
-                    messages[0]['content'][0]['nframes'] = self.max_frames_num
-                text = self._processor.apply_chat_template(
-                    messages, tokenize=False, add_generation_prompt=True
-                )
-                _, video_inputs = process_vision_info(messages)
-                generated_ids = self._model.generate(
-                    {
+
+        batch_size = self.batch_size
+        total = len(requests)
+        start_index = 0
+
+        while start_index < total:
+            end_index = min(start_index + batch_size, total)
+            batch = requests[start_index:end_index]
+
+            prompts_batch = []
+            texts_batch = []
+
+            for reg in batch:
+                contexts, gen_kwargs, doc_to_visual, doc_id, task, split = reg.args
+                visuals = [doc_to_visual(self.task_dict[task][split][doc_id])]
+                visuals = self.flatten(visuals)
+
+                if self.modality == "image":
+                    raise NotImplementedError("Image inference for Qwen2VL is not supported yet.")
+                elif self.modality == "video":
+                    assert len(visuals) == 1, f"Only one video is supported, but got {len(visuals)} videos."
+                    video_path = visuals[0]
+                    messages = [
+                        {
+                            "role": "user",
+                            "content": [
+                                {
+                                    "type": "video",
+                                    "video": f"{video_path}",
+                                },
+                                {"type": "text", "text": f"{contexts}"},
+                            ],
+                        }
+                    ]
+                    if self.max_frames_num:
+                        messages[0]['content'][0]['nframes'] = self.max_frames_num
+                    text = self._processor.apply_chat_template(
+                        messages, tokenize=False, add_generation_prompt=True
+                    )
+                    _, video_inputs = process_vision_info(messages)
+                    prompts_batch.append({
                         "prompt": text,
                         "multi_modal_data": {
                             "video": video_inputs
                         },
-                    },
-                    sampling_params=self.sampling_params
-                )
-                output_text = generated_ids[0].outputs[0].text
-            else:
-                raise NotImplementedError
-            print(text)
-            print(f"output text:")
-            print(output_text)
-            if int(os.getenv("VSI_THOUGHT_PROCESS")) == 1:
-                output_text = extract_answer(output_text)
-                print(f"extracted answer:")
+                    })
+                    texts_batch.append(text)
+                else:
+                    raise NotImplementedError
+
+            generated = self._model.generate(
+                prompts_batch,
+                sampling_params=self.sampling_params
+            )
+
+            for i, output in enumerate(generated):
+                output_text = output.outputs[0].text
+                print(texts_batch[i])
+                print(f"output text:")
                 print(output_text)
-            res.append(output_text)
-            pbar.update(1)
+                if int(os.getenv("VSI_THOUGHT_PROCESS", "0")) == 1:
+                    output_text = extract_answer(output_text)
+                    print(f"extracted answer:")
+                    print(output_text)
+                res.append(output_text)
+                pbar.update(1)
+
+            start_index = end_index
 
         pbar.close()
         return res
