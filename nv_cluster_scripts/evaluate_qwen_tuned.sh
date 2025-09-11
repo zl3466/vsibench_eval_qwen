@@ -88,6 +88,7 @@ export VLLM_WORKER_MULTIPROC_METHOD=spawn
 export VSI_THOUGHT_PROCESS=$thought
 export VSI_DATASET="full"
 export HUGGING_FACE_HUB_TOKEN="$hf"
+export VLLM_ATTENTION_BACKEND=FLASH_ATTN
 
 if [ "$models" = "all" ]; then
     IFS=',' read -r -a models <<<"$available_models"
@@ -135,7 +136,7 @@ for model in "${models[@]}"; do
         --model $model_family \
         --model_args $model_args \
         --tasks $benchmark \
-        --batch_size 4 \
+        --batch_size 8 \
         --log_samples \
         --log_samples_suffix $model \
         --output_path $output_path/$benchmark \
