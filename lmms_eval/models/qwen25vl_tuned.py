@@ -193,13 +193,12 @@ class Qwen25VL_tuned(lmms):
 
             for i, output in enumerate(generated):
                 output_text = output.outputs[0].text
-                # print(texts_batch[i])
+                print(texts_batch[i])
                 # print(f"output text:")
                 # print(output_text)
                 if int(os.getenv("VSI_THOUGHT_PROCESS", "0")) == 1:
                     output_text = extract_answer(output_text)
-                    # print(f"extracted answer:")
-                    # print(output_text)
+                    print(f"extracted answer:\n{output_text}\n")
                 res.append(output_text)
                 pbar.update(1)
 
