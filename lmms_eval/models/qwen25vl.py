@@ -73,8 +73,8 @@ class Qwen25VL(lmms):
             self.path,
             download_dir=download_dir,
             tensor_parallel_size=torch.cuda.device_count(),
-            max_model_len=30720,
-            gpu_memory_utilization=0.7
+            max_model_len=20480,
+            gpu_memory_utilization=0.9
         )
         self._processor = AutoProcessor.from_pretrained(self.path)
         self._tokenizer = AutoTokenizer.from_pretrained(self.path, trust_remote_code=True)
