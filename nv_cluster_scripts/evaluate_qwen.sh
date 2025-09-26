@@ -13,13 +13,12 @@ unset SLURM_NPROCS
 
 # Add user site-packages and other conda environments to Python path
 export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
-
 # Add other conda environments that might have required packages
 # The interactive node uses packages from 'vagen' environment
 export PYTHONPATH="/lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/envs/vagen/lib/python3.10/site-packages:$PYTHONPATH"
-
 # Also add the bin directory from the vagen environment
 export PATH="/lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/envs/vagen/bin:$PATH"
+
 # Source conda and activate environment
 source /lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/etc/profile.d/conda.sh
 conda activate vsibench
