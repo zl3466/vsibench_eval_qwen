@@ -11,13 +11,18 @@ unset SLURM_LOCALID
 unset SLURM_NTASKS
 unset SLURM_NPROCS
 
+# Add user site-packages and other conda environments to Python path
+export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
+
+# Add other conda environments that might have required packages
+# The interactive node uses packages from 'vagen' environment
+export PYTHONPATH="/lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/envs/vagen/lib/python3.10/site-packages:$PYTHONPATH"
+
+# Also add the bin directory from the vagen environment
+export PATH="/lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/envs/vagen/bin:$PATH"
 # Source conda and activate environment
 source /lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/etc/profile.d/conda.sh
 conda activate vsibench
-
-# Add user site-packages to Python path
-export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
-
 #export HUGGING_FACE_HUB_TOKEN=""
 export HF_HUB_CACHE="/lustre/fsw/portfolios/nvr/users/ymingli/cache/huggingface/hub"
 
@@ -115,15 +120,27 @@ for model in "${models[@]}"; do
             "
     fi
 
-    evaluate_script="$evaluate_script -m lmms_eval \
-        --model $model_family \
-        --model_args $model_args \
-        --tasks $benchmark \
-        --batch_size 1 \
-        --log_samples \
-        --log_samples_suffix $model \
-        --output_path $output_path/$benchmark \
-        "
+    if [ "$launcher" = "python" ]; then
+        evaluate_script="$evaluate_script \
+            --model $model_family \
+            --model_args $model_args \
+            --tasks $benchmark \
+            --batch_size 1 \
+            --log_samples \
+            --log_samples_suffix $model \
+            --output_path $output_path/$benchmark \
+            "
+    else
+        evaluate_script="$evaluate_script -m lmms_eval \
+            --model $model_family \
+            --model_args $model_args \
+            --tasks $benchmark \
+            --batch_size 1 \
+            --log_samples \
+            --log_samples_suffix $model \
+            --output_path $output_path/$benchmark \
+            "
+    fi
 
     if [ -n "$limit" ]; then
         evaluate_script="$evaluate_script \
