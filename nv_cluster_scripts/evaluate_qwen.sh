@@ -11,11 +11,13 @@ unset SLURM_LOCALID
 unset SLURM_NTASKS
 unset SLURM_NPROCS
 
-# Add user site-packages to Python path
-export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
 # Source conda and activate environment
 source /lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/etc/profile.d/conda.sh
 conda activate vsibench
+
+# Add user site-packages to Python path
+export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH"
+
 #export HUGGING_FACE_HUB_TOKEN=""
 export HF_HUB_CACHE="/lustre/fsw/portfolios/nvr/users/ymingli/cache/huggingface/hub"
 
