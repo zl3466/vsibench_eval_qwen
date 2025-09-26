@@ -81,7 +81,7 @@ done
 
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
 export VSI_THOUGHT_PROCESS=$thought
-export VSI_DATASET="other_subjects"
+export VSI_DATASET="other_subjects_1"
 export HUGGING_FACE_HUB_TOKEN="$hf"
 
 if [ "$models" = "all" ]; then
