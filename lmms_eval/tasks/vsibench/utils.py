@@ -118,6 +118,15 @@ def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
             x['question_type'].startswith('object_abs_distance') or
             x['question_type'].startswith('route_planning'))
         return datasets
+    elif os.getenv("VSI_DATASET") == "other_subjects":
+        eval_logger.info("Testing subjects not directly related to pose estimation...")
+        datasets = dataset.filter(
+            lambda x:
+            not(x['question_type'].startswith("object_rel_distance") or
+            x['question_type'].startswith('object_rel_direction') or
+            x['question_type'].startswith('object_abs_distance') or
+            x['question_type'].startswith('route_planning')))
+        return datasets
     else:
         eval_logger.info("Using full dataset")
         datasets = dataset.filter(

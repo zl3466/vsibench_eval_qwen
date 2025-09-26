@@ -86,7 +86,7 @@ done
 
 export VLLM_WORKER_MULTIPROC_METHOD=spawn
 export VSI_THOUGHT_PROCESS=$thought
-export VSI_DATASET="full"
+export VSI_DATASET="other_subjects" # choice between mini, full, other_subjects
 export HUGGING_FACE_HUB_TOKEN="$hf"
 export VLLM_ATTENTION_BACKEND=FLASH_ATTN
 
