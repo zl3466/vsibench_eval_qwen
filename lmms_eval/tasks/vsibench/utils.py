@@ -275,11 +275,17 @@ def vsibench_aggregate_results(results):
         else:
             raise ValueError(f"Unknown question type: {question_type}")
 
-    output['object_rel_direction_accuracy'] = sum([
-        output.pop('object_rel_direction_easy_accuracy'),
-        output.pop('object_rel_direction_medium_accuracy'),
-        output.pop('object_rel_direction_hard_accuracy'),
-    ]) / 3.
+    # Combine available object_rel_direction_* accuracies if present.
+    # This avoids KeyError when evaluating a filtered subset of subtopics.
+    direction_keys = [
+        'object_rel_direction_easy_accuracy',
+        'object_rel_direction_medium_accuracy',
+        'object_rel_direction_hard_accuracy',
+    ]
+    present_direction_keys = [k for k in direction_keys if k in output]
+    if len(present_direction_keys) > 0:
+        direction_values = [output.pop(k) for k in present_direction_keys]
+        output['object_rel_direction_accuracy'] = sum(direction_values) / len(direction_values)
 
     output['overall'] = sum([_ for _ in output.values()]) / len(output)
     eval_logger.info(f"Evaluation results: {output}")
