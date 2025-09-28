@@ -37,7 +37,7 @@ def extract_answer(text):
     match = re.search(pattern, text, re.DOTALL)
     if match:
         return match.group(1).strip()
-    return ""
+    return text
 @register_model("qwen25vl_tuned")
 class Qwen25VL_tuned(lmms):
     def __init__(

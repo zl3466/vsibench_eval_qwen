@@ -5,6 +5,9 @@ from loguru import logger as eval_logger
 from functools import partial
 import numpy as np
 import pandas as pd
+import re
+import string
+import copy as cp
 
 import datasets
 
@@ -204,6 +207,81 @@ def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
 #     else:
 #         return dataset
 
+def can_infer_option(answer, choices):
+    verbose = os.environ.get('VERBOSE', 0)
+    # Choices is a dictionary
+    if 'Failed to obtain answer via API' in answer:
+        return False
+
+    reject_to_answer = [
+        "Sorry, I can't help with images of people yet.",
+        "I can't process this file.",
+        "I'm sorry, but without the image provided",
+        'Cannot determine the answer'
+    ]
+    for err in reject_to_answer:
+        if err in answer:
+            return 'Z'
+
+    def count_choice(splits, choices, prefix='', suffix=''):
+        cnt = 0
+        for c in choices:
+            if prefix + c + suffix in splits:
+                cnt += 1
+        return cnt
+
+    answer_mod = cp.copy(answer)
+    chars = '.()[],:;!*#{}'
+    for c in chars:
+        answer_mod = answer_mod.replace(c, ' ')
+
+    splits = [x.strip() for x in answer_mod.split()]
+    count = count_choice(splits, choices)
+
+    if count == 1:
+        for ch in choices:
+            if 'A' in splits and len(splits) > 3 and verbose:
+                eval_logger.info(f'A might be a quantifier in the string: {answer}.')
+                return False
+            if ch in splits:
+                return ch
+    elif count == 0 and count_choice(splits, {'Z', ''}) == 1:
+        return 'Z'
+    return False
+
+
+def can_infer_text(answer, choices):
+    answer = answer.lower()
+    assert isinstance(choices, dict)
+    for k in choices:
+        assert k in string.ascii_uppercase
+        choices[k] = str(choices[k]).lower()
+    cands = []
+    for k in choices:
+        if choices[k] in answer:
+            cands.append(k)
+    if len(cands) == 1:
+        return cands[0]
+    return False
+
+
+def extract_answer(text):
+    pattern = r'<answer>\s*(.*?)\s*</answer>'
+    match = re.search(pattern, text, re.DOTALL)
+    if match:
+        return match.group(1).strip()
+    return text
+
+
+def can_infer(answer, choices):
+    answer = str(answer)
+    if int(os.getenv("VSI_THOUGHT_PROCESS", "0")) == 1:
+        answer = extract_answer(answer)
+    copt = can_infer_option(answer, choices)
+    result = copt if copt else can_infer_text(answer, choices)
+    return result
+
+
 def fuzzy_matching(pred):
     return pred.split(' ')[0].rstrip('.').strip()
 
@@ -237,6 +315,29 @@ def to_float(pred):
     return pred
 
 
+# def vsibench_process_results(doc, results):
+#     doc['prediction'] = results[0]
+#     if doc['question_type'] in MCA_QUESTION_TYPES:
+#         # Use robust answer extraction for MCA questions
+#         choices = {chr(ord('A') + i): doc['options'][i] for i in range(len(doc['options']))}
+#         extracted_answer = can_infer(doc['prediction'], choices)
+#         if not extracted_answer:
+#             # Fallback to fuzzy matching if robust extraction fails
+#             extracted_answer = fuzzy_matching(doc['prediction'])
+        
+#         for key, value in METRICS_FOR_MCA.items():
+#             doc[key] = eval(value)(extracted_answer, doc['ground_truth'])
+#     elif doc['question_type'] in NA_QUESTION_TYPES:
+#         for key, value in METRICS_FOR_NA.items():
+#             try:
+#                 doc[key] = eval(value)(to_float(fuzzy_matching(doc['prediction'])), to_float(doc['ground_truth']))
+#             except TypeError:
+#                 doc[key] = WORST_CASE_FOR_METRICS[key]
+#     else:
+#         raise ValueError(f"Unknown question type: {doc['question_type']}")
+
+#     return {"vsibench_score": doc}
+
 def vsibench_process_results(doc, results):
     doc['prediction'] = results[0]
     if doc['question_type'] in MCA_QUESTION_TYPES:
@@ -252,7 +353,6 @@ def vsibench_process_results(doc, results):
         raise ValueError(f"Unknown question type: {doc['question_type']}")
 
     return {"vsibench_score": doc}
-
 
 def vsibench_aggregate_results(results):
     results = pd.DataFrame(results)
