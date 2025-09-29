@@ -315,34 +315,18 @@ def to_float(pred):
     return pred
 
 
-# def vsibench_process_results(doc, results):
-#     doc['prediction'] = results[0]
-#     if doc['question_type'] in MCA_QUESTION_TYPES:
-#         # Use robust answer extraction for MCA questions
-#         choices = {chr(ord('A') + i): doc['options'][i] for i in range(len(doc['options']))}
-#         extracted_answer = can_infer(doc['prediction'], choices)
-#         if not extracted_answer:
-#             # Fallback to fuzzy matching if robust extraction fails
-#             extracted_answer = fuzzy_matching(doc['prediction'])
-        
-#         for key, value in METRICS_FOR_MCA.items():
-#             doc[key] = eval(value)(extracted_answer, doc['ground_truth'])
-#     elif doc['question_type'] in NA_QUESTION_TYPES:
-#         for key, value in METRICS_FOR_NA.items():
-#             try:
-#                 doc[key] = eval(value)(to_float(fuzzy_matching(doc['prediction'])), to_float(doc['ground_truth']))
-#             except TypeError:
-#                 doc[key] = WORST_CASE_FOR_METRICS[key]
-#     else:
-#         raise ValueError(f"Unknown question type: {doc['question_type']}")
-
-#     return {"vsibench_score": doc}
-
 def vsibench_process_results(doc, results):
     doc['prediction'] = results[0]
     if doc['question_type'] in MCA_QUESTION_TYPES:
+        # Use robust answer extraction for MCA questions
+        choices = {chr(ord('A') + i): doc['options'][i] for i in range(len(doc['options']))}
+        extracted_answer = can_infer(doc['prediction'], choices)
+        if not extracted_answer:
+            # Fallback to fuzzy matching if robust extraction fails
+            extracted_answer = fuzzy_matching(doc['prediction'])
+        
         for key, value in METRICS_FOR_MCA.items():
-            doc[key] = eval(value)(fuzzy_matching(doc['prediction']), doc['ground_truth'])
+            doc[key] = eval(value)(extracted_answer, doc['ground_truth'])
     elif doc['question_type'] in NA_QUESTION_TYPES:
         for key, value in METRICS_FOR_NA.items():
             try:
@@ -353,6 +337,22 @@ def vsibench_process_results(doc, results):
         raise ValueError(f"Unknown question type: {doc['question_type']}")
 
     return {"vsibench_score": doc}
+
+# def vsibench_process_results(doc, results):
+#     doc['prediction'] = results[0]
+#     if doc['question_type'] in MCA_QUESTION_TYPES:
+#         for key, value in METRICS_FOR_MCA.items():
+#             doc[key] = eval(value)(fuzzy_matching(doc['prediction']), doc['ground_truth'])
+#     elif doc['question_type'] in NA_QUESTION_TYPES:
+#         for key, value in METRICS_FOR_NA.items():
+#             try:
+#                 doc[key] = eval(value)(to_float(fuzzy_matching(doc['prediction'])), to_float(doc['ground_truth']))
+#             except TypeError:
+#                 doc[key] = WORST_CASE_FOR_METRICS[key]
+#     else:
+#         raise ValueError(f"Unknown question type: {doc['question_type']}")
+
+#     return {"vsibench_score": doc}
 
 def vsibench_aggregate_results(results):
     results = pd.DataFrame(results)
