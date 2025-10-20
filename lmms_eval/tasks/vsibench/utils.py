@@ -143,21 +143,21 @@ def process_docs(dataset: datasets.Dataset) -> datasets.Dataset:
             x['question_type'].startswith('route_planning'))
         return datasets
     elif os.getenv("VSI_DATASET") == "other_subjects_1":
-        eval_logger.info("Testing subjects not directly related to pose estimation...")
+        eval_logger.info("Testing first set of subjects not directly related to pose estimation...")
         datasets = dataset.filter(
             lambda x:
             (x['question_type'].startswith("object_counting") or
              x['question_type'].startswith('obj_appearance_order')))
         return datasets
     elif os.getenv("VSI_DATASET") == "other_subjects_2":
-        eval_logger.info("Testing subjects not directly related to pose estimation...")
+        eval_logger.info("Testing second set of subjects not directly related to pose estimation...")
         datasets = dataset.filter(
             lambda x:
             (x['question_type'].startswith('room_size_estimation') or
              x['question_type'].startswith('object_size_estimation')))
         return datasets
     else:
-        eval_logger.info("Using full dataset")
+        eval_logger.info("Testing subjects related to pose estimation")
         datasets = dataset.filter(
             lambda x:
             x['question_type'].startswith("object_rel_distance") or
