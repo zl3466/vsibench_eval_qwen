@@ -22,6 +22,10 @@ export PYTHONPATH="/home/ymingli/.local/lib/python3.10/site-packages:$PYTHONPATH
 # Source conda and activate environment
 source /lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/etc/profile.d/conda.sh
 conda activate vsibench
+
+# Force clean environment by unsetting any inherited paths
+unset PYTHONPATH
+export PYTHONPATH="/lustre/fsw/portfolios/nvr/users/ymingli/miniconda3/envs/vsibench/lib/python3.10/site-packages"
 #export HUGGING_FACE_HUB_TOKEN=""
 export HF_HUB_CACHE="/lustre/fsw/portfolios/nvr/users/ymingli/cache/huggingface/hub"
 
