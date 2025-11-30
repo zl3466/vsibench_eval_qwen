@@ -104,22 +104,22 @@ for model in "${models[@]}"; do
         ;;
     "qwen25_7b_tuned")
         model_family="qwen25vl_tuned"
-        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM_new/outdoor/out_gr_20251114_094539/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM/outdoor/out_gr_20251002_104632/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     "qwen25_7b_tuned_tp")
         model_family="qwen25vl_tuned"
-        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM_new/outdoor/out_gr+temporal_20251114_094549/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM/outdoor/out_gr+temporal_20251002_104649/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     "qwen25_7b_sft")
         model_family="qwen25vl_tuned"
-        model_args="/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM_new/outdoor/out_sft_gr_1500_20251114_094613/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM/outdoor/out_sft_gr_20251012_085727/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     "qwen25_7b_sft_tp")
         model_family="qwen25vl_tuned"
-        model_args="/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM_new/outdoor/out_sft_gr+temporal_1500_20251126_060702/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM/outdoor/out_sft_gr+temporal_20251012_085739/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     *)
