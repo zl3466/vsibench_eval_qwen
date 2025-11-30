@@ -114,12 +114,12 @@ for model in "${models[@]}"; do
         ;;
     "qwen25_7b_sft")
         model_family="qwen25vl_tuned"
-        model_args="/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM/all/all_sft_gr_20251005_183132/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM/all/all_sft_gr_20251005_183132/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     "qwen25_7b_sft_tp")
         model_family="qwen25vl_tuned"
-        model_args="/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM/all/all_sft_gr+temporal_20251012_085459/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM/all/all_sft_gr+temporal_20251012_085459/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     *)
