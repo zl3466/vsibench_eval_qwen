@@ -109,7 +109,7 @@ for model in "${models[@]}"; do
         ;;
     "qwen25_7b_tuned_tp")
         model_family="qwen25vl_tuned"
-        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM_new/outdoor/out_gr+temporal_20251114_094549/ckpt,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
+        model_args="pretrained=/lustre/fsw/portfolios/nvr/users/ymingli/projects/playground/log/VOLM_new/outdoor/out_gr+temporal_20251114_094549/ckpt/checkpoint-2520,video_decode_backend=decord,conv_template=qwen_2_5,max_frames_num=64,device_map=auto,modality=video"
         num_processes=1
         ;;
     "qwen25_7b_sft")
